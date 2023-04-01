@@ -139,6 +139,20 @@ const deviceController={
         }
     },
 
+        //get device by location name
+        getDeviceByLocationName : async (req,res)=>{
+            const locationName = req.params.locationName;
+            try{
+                const devices = await Device.find({locationName:locationName});
+                res.json({
+                    msg:"Device found",
+                    data: devices,
+                });
+            }catch(err){
+                return res.status(500).json({message:err.message});
+            }
+        },
+
 
 };
 

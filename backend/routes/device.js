@@ -18,6 +18,9 @@ deviceRouter.put("/update/:id", deviceController.updateDevice);
 //delete device
 deviceRouter.delete("/delete/:id", deviceController.deleteDevice);
 
+//get device by locationName
+deviceRouter.get("/deviceByLocation/:locationName", deviceController.getDeviceByLocationName);
+
 
 
 module.exports = deviceRouter;
