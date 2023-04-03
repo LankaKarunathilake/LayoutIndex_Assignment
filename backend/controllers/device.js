@@ -1,13 +1,24 @@
-const Device = require('../models/device');
-const Location = require('../models/location');
+// const Device = require('../models/device');
+const {Location} = require('../models/location');
+const {Device,validateDevice,validateUpdateDevice} = require('../models/device');
 
 const deviceController={
 
-    //add device to the database
+    //Add device to the database
     addDevice: async (req, res)=>{
         try{
-
-            const {serialNo, type, locationName, photo, status, locationId } = req.body;
+            console.log(req.body)
+            const validate = {
+                serialNo:req.body.serialNo,
+                type:req.body.type,
+                locationName:req.body.locationName,
+                photo:req.body.photo,
+            }
+            const {error}=validateDevice(validate);
+            if(error){
+                return res.status(400).json({msg:error.details[0].message});
+            }
+            const {serialNo, type, locationName, photo, locationId } = req.body;
             //check if the serial number is already in the database
             const existingDevice = await Device.findOne({serialNo:serialNo});
             const existingLocation = await Location.findOne({name:locationName});
@@ -21,11 +32,12 @@ const deviceController={
             });
 
             const newDevice = new Device({
+
                 serialNo, 
                 type, 
                 locationName, 
-                // photo:photo, 
-                status,
+                photo:photo, 
+                
             });
 
             await newDevice.save();
@@ -77,23 +89,11 @@ const deviceController={
     //update device
     updateDevice : async (req,res)=>{
         try{
-
+            console.log(req.body)
             const id = req.params.id;
             const {serialNo, type, locationName, photo, status} = req.body;
 
-            const existingDevice =await Device.findOne({
-                serialNo:serialNo,
-            });
-            const existingLocation = await Location.findOne({name:locationName});
-            if(existingDevice)
-                return res.status(400).json({
-                    msg:"Device already exists",
-            });
-            if(!existingLocation)
-                    return res.status(400).json({
-                    msg:"Location does not exist",
-            });
-
+            console.log(type, locationName, photo, status)
             await Device.findByIdAndUpdate(
                 {_id:id},
                 { type, locationName, photo, status},
